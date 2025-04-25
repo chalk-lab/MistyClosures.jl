@@ -4,7 +4,7 @@ CurrentModule = MistyClosures
 
 # MistyClosures
 
-Documentation for [MistyClosures](https://github.com/compintell/MistyClosures.jl).
+Documentation for [MistyClosures](https://github.com/chalk-lab/MistyClosures.jl).
 
 ```@index
 ```
