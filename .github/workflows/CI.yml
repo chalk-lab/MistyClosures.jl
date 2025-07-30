@@ -23,7 +23,9 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - '1.10'
+          - 'lts'
+          - '1.11'
+          - 'pre'
         os:
           - ubuntu-latest
         arch:
