@@ -16,7 +16,7 @@ struct MistyClosure{Toc<:OpaqueClosure}
 end
 
 function MistyClosure(ir::IRCode, env...; kwargs...)
-    @static if VERSION ≥ v"1.12"
+    @static if VERSION ≥ v"1.12.0-beta1"
         ir.argtypes[1] = Tuple{}
     end
     return MistyClosure(OpaqueClosure(ir, env...; kwargs...), Ref(ir))
