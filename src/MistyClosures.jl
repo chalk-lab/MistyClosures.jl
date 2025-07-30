@@ -17,7 +17,7 @@ end
 
 function MistyClosure(ir::IRCode, env...; kwargs...)
     @static if VERSION ≥ v"1.12"
-        ir.argtypes = Tuple{}
+        ir.argtypes[1] = Tuple{}
     end
     return MistyClosure(OpaqueClosure(ir, env...; kwargs...), Ref(ir))
 end
