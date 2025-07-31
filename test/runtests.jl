@@ -12,8 +12,10 @@ function _fix_ir(ir)
     @static if VERSION ≥ v"1.12.0-beta1" 
         _ir = copy(ir)
         _ir.argtypes[1] = Tuple{}
+        return _ir
+    else
+        return ir
     end
-    _ir
 end
 
 @testset "MistyClosures.jl" begin
