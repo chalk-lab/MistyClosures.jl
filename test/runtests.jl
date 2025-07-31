@@ -9,8 +9,8 @@ end
 (f::Foo)(y) = f.x * y
 
 function _fix_ir(ir)
-    _ir = copy(ir)
     @static if VERSION ≥ v"1.12.0-beta1" 
+        _ir = copy(ir)
         _ir.argtypes[1] = Tuple{}
     end
     _ir
