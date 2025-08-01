@@ -8,12 +8,17 @@ end
 
 (f::Foo)(y) = f.x * y
 
-function _fix_ir(ir)
+function _fix_ir!(ir)
     @static if VERSION ≥ v"1.12.0-"
-        # replace `argtypes[1]` if it is not `Core.Const(sin)`, e.g., it is a callable object
-        ir.argtypes[1] = ir.argtypes[1] isa Core.Const ? Tuple{} : Tuple{ir.argtypes[1]}
+        # replace `argtypes[1]` if it is not `Core.Const(sin)`, e.g., it is a callable object, or `Tuple{}`
+        ir.argtypes[1] = if ir.argtypes[1] isa Core.Const 
+             Tuple{} 
+        elseif ir.argtypes[1] != Tuple{}
+            Tuple{ir.argtypes[1]}
+        else
+            ir.argtypes[1]
+        end
     end
-    return ir
 end
 
 @testset "MistyClosures.jl" begin
@@ -24,8 +29,8 @@ end
     @test @inferred(mc(5.0)) == sin(5.0)
 
     # Default constructor.
-    ir_fixed = _fix_ir(ir)
-    mc_default = MistyClosure(OpaqueClosure(ir_fixed; do_compile=true), Ref(ir_fixed))
+    _fix_ir!(ir)
+    mc_default = MistyClosure(OpaqueClosure(ir; do_compile=true), Ref(ir))
     @test @inferred(mc_default(5.0) == sin(5.0))
 
     # Recommended constructor with env.
@@ -34,8 +39,8 @@ end
     @test @inferred(mc_with_env(4.0)) == Foo(5.0)(4.0)
 
     # Default constructor with env.
-    ir_foo_fixed = _fix_ir(ir_foo)
-    mc_env_default = MistyClosure(OpaqueClosure(ir_foo_fixed, 4.0; do_compile=true), Ref(ir_foo_fixed))
+    _fix_ir!(ir_foo)
+    mc_env_default = MistyClosure(OpaqueClosure(ir_foo, 4.0; do_compile=true), Ref(ir_foo))
     @test @inferred(mc_env_default(5.0) == Foo(5.0)(4.0))
 
     # deepcopy
