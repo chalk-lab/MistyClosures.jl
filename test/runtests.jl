@@ -19,6 +19,7 @@ function _fix_ir!(ir)
             ir.argtypes[1]
         end
     end
+    ir
 end
 
 @testset "MistyClosures.jl" begin
