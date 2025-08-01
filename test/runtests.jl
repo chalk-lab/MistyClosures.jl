@@ -9,8 +9,9 @@ end
 (f::Foo)(y) = f.x * y
 
 function _fix_ir(ir)
-    @static if VERSION ≥ v"1.12.0-beta1" 
-        ir.argtypes[1] = Tuple{}
+    @static if VERSION ≥ v"1.12.0-"
+        # replace `argtypes[1]` if it is not `Core.Const(sin)`, e.g., it is a callable object
+        ir.argtypes[1] = ir.argtypes[1] isa Core.Const ? Tuple{} : Tuple{ir.argtypes[1]}
     end
     return ir
 end
