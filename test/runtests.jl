@@ -16,7 +16,7 @@ function _fix_ir(ir)
 end
 
 @testset "MistyClosures.jl" begin
-    ir = Base.code_ircode_by_type(Tuple{typeof(sin), Float64})[1][1]
+    ir = Base.code_ircode_by_type(Tuple{typeof(sin), Float64}) |> only |> first
 
     # Recommended constructor.
     mc = MistyClosure(ir; do_compile=true)
@@ -28,7 +28,7 @@ end
     @test @inferred(mc_default(5.0) == sin(5.0))
 
     # Recommended constructor with env.
-    ir_foo = Base.code_ircode_by_type(Tuple{Foo, Float64})[1][1]
+    ir_foo = Base.code_ircode_by_type(Tuple{Foo, Float64}) |> only |> first
     mc_with_env = MistyClosure(ir_foo, 5.0; do_compile=true)
     @test @inferred(mc_with_env(4.0)) == Foo(5.0)(4.0)
 
