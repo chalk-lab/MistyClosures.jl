@@ -12,7 +12,7 @@ end
 
 @testset "MistyClosures.jl" begin
     ir = Base.code_ircode_by_type(Tuple{typeof(sin), Float64}) |> only |> first
-    ir_foo.argtypes[1] = Tuple{}
+    ir.argtypes[1] = Tuple{}
 
     # Recommended constructor.
     mc = MistyClosure(ir; do_compile=true)
