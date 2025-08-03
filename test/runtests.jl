@@ -6,24 +6,13 @@ struct Foo
     x::Float64
 end
 
-(f::Foo)(y) = f.x * y
-
-function _fix_argtypes!(ir)
-    @static if VERSION ≥ v"1.12.0-"
-        # replace `argtypes[1]` if it is not `Core.Const(sin)`, e.g., it is a callable object, or `Tuple{}`
-        ir.argtypes[1] = if ir.argtypes[1] isa Core.Const 
-             Tuple{} 
-        elseif ir.argtypes[1] != Tuple{}
-            Tuple{ir.argtypes[1]}
-        else
-            ir.argtypes[1]
-        end
-    end
-    ir
-end
+# We wrap `Foo` inside `Tuple{Foo}` to satisfy opaque closure assumption 
+# that its first argument has to be a `Tuple` storing captured variables
+(f::Tuple{Foo})(y) = f[1].x * y
 
 @testset "MistyClosures.jl" begin
-    ir = Base.code_ircode_by_type(Tuple{typeof(sin), Float64}) |> only |> first |> _fix_argtypes!
+    ir = Base.code_ircode_by_type(Tuple{typeof(sin), Float64}) |> only |> first
+    ir_foo.argtypes[1] = Tuple{}
 
     # Recommended constructor.
     mc = MistyClosure(ir; do_compile=true)
@@ -34,7 +23,7 @@ end
     @test @inferred(mc_default(5.0) == sin(5.0))
 
     # Recommended constructor with env.
-    ir_foo = Base.code_ircode_by_type(Tuple{Foo, Float64}) |> only |> first |> _fix_argtypes!
+    ir_foo = Base.code_ircode_by_type(Tuple{Foo, Float64}) |> only |> first
     mc_with_env = MistyClosure(ir_foo, 5.0; do_compile=true)
     @test @inferred(mc_with_env(4.0)) == Foo(5.0)(4.0)
 
