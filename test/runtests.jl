@@ -24,12 +24,12 @@ end
 
     # Recommended constructor with env.
     ir_foo = Base.code_ircode_by_type(Tuple{Tuple{Foo}, Float64}) |> only |> first
-    mc_with_env = MistyClosure(ir_foo, 5.0; do_compile=true)
-    @test @inferred(mc_with_env(4.0)) == Foo(5.0)(4.0)
+    mc_with_env = MistyClosure(ir_foo, Foo(5.0); do_compile=true)
+    @test @inferred(mc_with_env(4.0)) == (Foo(5.0),)(4.0)
 
     # Default constructor with env.
-    mc_env_default = MistyClosure(OpaqueClosure(ir_foo, 4.0; do_compile=true), Ref(ir_foo))
-    @test @inferred(mc_env_default(5.0) == Foo(5.0)(4.0))
+    mc_env_default = MistyClosure(OpaqueClosure(ir_foo, Foo(5.0); do_compile=true), Ref(ir_foo))
+    @test @inferred(mc_env_default(5.0) == (Foo(5.0),)(4.0))
 
     # deepcopy
     @test deepcopy(mc) isa typeof(mc)
