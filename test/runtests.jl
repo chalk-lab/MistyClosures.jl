@@ -23,7 +23,7 @@ end
     @test @inferred(mc_default(5.0) == sin(5.0))
 
     # Recommended constructor with env.
-    ir_foo = Base.code_ircode_by_type(Tuple{Foo, Float64}) |> only |> first
+    ir_foo = Base.code_ircode_by_type(Tuple{Tuple{Foo}, Float64}) |> only |> first
     mc_with_env = MistyClosure(ir_foo, 5.0; do_compile=true)
     @test @inferred(mc_with_env(4.0)) == Foo(5.0)(4.0)
 
