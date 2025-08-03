@@ -16,17 +16,7 @@ struct MistyClosure{Toc<:OpaqueClosure}
 end
 
 function MistyClosure(ir::IRCode, env...; kwargs...)
-    @static if VERSION ≥ v"1.12.0-"
-        # replace `argtypes[1]` with `Tuple{} if it is `Core.Const(sin)`
-        # do nothing if it is a callable object, or `Tuple{}`
-        ir.argtypes[1] = if ir.argtypes[1] isa Core.Const 
-            Tuple{} 
-        elseif ir.argtypes[1] != Tuple{}
-            Tuple{ir.argtypes[1]}
-        else
-            ir.argtypes[1]
-        end
-    end
+    ir.argtypes[1] isa Tuple || error("sigtype mismatch in optimized misty closure")
     return MistyClosure(OpaqueClosure(ir, env...; kwargs...), Ref(ir))
 end
 
