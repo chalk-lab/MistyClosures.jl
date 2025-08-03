@@ -16,7 +16,6 @@ struct MistyClosure{Toc<:OpaqueClosure}
 end
 
 function MistyClosure(ir::IRCode, env...; kwargs...)
-    ir.argtypes[1] isa Tuple || error("sigtype mismatch in optimized misty closure")
     return MistyClosure(OpaqueClosure(ir, env...; kwargs...), Ref(ir))
 end
 
