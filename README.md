@@ -6,14 +6,15 @@
 
 Marginally less opaque closures.
 
-Specifically, a `MistyClosure` is comprises an `OpaqueClosure` paired with the `IRCode` that defines it.
+Specifically, a `MistyClosure` comprises an `OpaqueClosure` paired with the `IRCode` that defines it.
 This is useful if you generate an `OpaqueClosure`, and want to be able to retrieve the `IRCode` later on.
 
 ## Recommended Use
 
 ```julia
-# Get the `IRCode` associated to `sin(5.0)`.
-ir = Base.code_ircode_by_type(Tuple{typeof(sin), Float64})[1][1]
+# Get the `IRCode` associated with `sin(5.0)`.
+ir = Base.code_ircode_by_type(Tuple{typeof(sin), Float64}) |> only |> first;
+ir.argtypes[1] = Tuple{}
 
 # Produce a `MistyClosure` using it. All kwargs are passed to the `OpaqueClosure`
 # constructor.
@@ -23,12 +24,12 @@ mc = MistyClosure(ir; do_compile=true)
 mc(5.0) == sin(5.0)
 ```
 
-## Alterative Use
+## Alternative Use
 
 Sometimes you'll already have an `OpaqueClosure` lying around, and not want to produce a new one from an `IRCode` (as this often takes a surprisingly large amount of time).
-If ths is the case, you can simply use the default constructor for `MistyClosure`.
+If this is the case, you can simply use the default constructor for `MistyClosure`.
 That is, write
 ```julia
 mc = MistyClosure(existing_opaque_closure, ir)
 ```
-Of course, it is _your_ responsibility so ensure that `ir` and `existing_opaque_closure` are in agreement.
+Of course, it is _your_ responsibility to ensure that `ir` and `existing_opaque_closure` are in agreement.
