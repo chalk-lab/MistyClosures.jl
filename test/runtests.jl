@@ -29,7 +29,7 @@ end
 
     # Default constructor with env.
     mc_env_default = MistyClosure(OpaqueClosure(ir_foo, Foo(5.0); do_compile=true), Ref(ir_foo))
-    @test @inferred(mc_env_default(5.0) == (Foo(5.0),)(4.0))
+    @test @inferred(mc_env_default(4.0)) == (Foo(5.0),)(4.0)
 
     # deepcopy
     @test deepcopy(mc) isa typeof(mc)
